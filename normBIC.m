@@ -106,23 +106,9 @@ end
 
 %% 4) Determine if Cm is globally increasing or decreasing and start plotting stuff
 f = figure;
-p = plot(C1);
-if length(C1) > 30 % if more than 30 values being plotted, look for number divisble that's closest to 50
-    nStart = 50;
-    nEnd = round(length(C1) / 5) * 5;
-    while rem(nEnd,nStart)
-        nStart = nStart + 1;
-    end
-    
-    ticks = 1:(nEnd/nStart):nEnd;
-    if ticks(end) < length(C1)
-        ticks = [ticks length(C1)];
-    end
-    f.CurrentAxes.XTick = ticks;
-end
-f.CurrentAxes.XTickLabel = nC(f.CurrentAxes.XTick);
+p = plot(nC,C1);
+
 f.CurrentAxes.XTickLabelRotation = 90;
-f.CurrentAxes.XLim = [1 length(C1)];
 set(gcf,'color','w');
 set(gca,'box','off')
 p.Color = [0.7 0.7 0.7];
@@ -164,7 +150,7 @@ end
 % anyway since it's difficult to produce a clustering solution for k =
 % 1...maximum number of points in the data. 
 hold on
-p2 = plot(diffBic);
+p2 = plot(nC,diffBic);
 p2.Color = [0.2 0.2 0.2];
 p2.LineWidth = 2;
 p2.LineStyle = '--';
@@ -206,9 +192,9 @@ if ~isempty(iPt)
     optimalCluster = nC(optimalClusterIdx);
     iCluster = nC(iPt);
 else
-    warning('No knee detected...most likely, your original BIC curve has a portion that shows clear overfitting and that portion is larger than the portion of the BIC curve that eventually plateaus')
-    warning('Check your original BIC curve and find a subset of clustering solutions to focus (i.e., remove the portion that is clearly overfitting)')
-    warning('Optimal cluster assumed to be the max of diffBic')
+    warning('No knee detected...optimal k is set to the largest BIC value but the smallest value might make more sense')
+    warning('You can try to find a subset of clustering solutions to focus on. This is especially a good idea if your BIC curve shows both increasing and decreasing global trends (i.e., where there is a clear point after which overfitting starts to occur)')
+    
     [optimalClusterBic,optimalClusterIdx] = max(diffBic(1:end));
     optimalCluster = nC(optimalClusterIdx);
     iCluster = [];
