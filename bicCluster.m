@@ -39,7 +39,11 @@ end
 V = repmat(Vo,[1,length(YUn)]);
 
 %% 4) Compute log-likelihood LL
-LL = -Nc'.*sum(log(Vc + V)/2,1); % 1 X K
+tmp1 = Vc + V; % have to split LL computation across steps to avoid taking log of zero
+idx = find(tmp1 == 0); % find zeros
+tmp1(idx) = 1.9763e-323; % closest value to zero that matlab can represent
+tmp1 = log(tmp1)/2; % log of zero is inf
+LL = -Nc'.*sum(tmp1,1); % 1 X K
 
 %% 5) Compute BIC
 BIC = -2 * sum(LL,2) + 2*size(Nc,1)*size(X,2) * log(size(X,1));
